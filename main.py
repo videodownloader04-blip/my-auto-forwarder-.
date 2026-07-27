@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 import os
 
-# --- ENVIRONMENT VARIABLES (Railway-il ninnu data edukkuvਾਨu) ---
+# --- ENVIRONMENT VARIABLES ---
 API_ID = int(os.environ.get("API_ID", 0))
 API_HASH = os.environ.get("API_HASH", "")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
@@ -9,41 +9,55 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 SOURCE_CHANNEL_ID = int(os.environ.get("SOURCE_CHANNEL_ID", 0))
 TARGET_CHANNEL_ID = int(os.environ.get("TARGET_CHANNEL_ID", 0))
 
-# --- PUTHIYA CAPTION (Ivide ningalude puthiya caption nalkuka) ---
+# --- POWERFUL CUSTOM CAPTION ---
 NEW_CAPTION = """
-🎬 **Puthiya Video Vannu!** 🚀
+✨ **New Update Released!** 🚀
 
-🔥 Enjoy the video without blur!
-📢 Join our main channel for more!
+🔥 **Quality:** HD & Unblurred
+📢 **Channel:** Stay Tuned for More!
 """
 
-# Bot initialize cheyyunnu
 app = Client(
-    "auto_forward_bot",
+    "powerful_auto_forward_bot",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN
 )
 
-# Source channelil puthiya message (video, photo, document) varumpol ee function work aakum
+# Media (Video, Photo, Document) varumbol work cheyyum
 @app.on_message(filters.chat(SOURCE_CHANNEL_ID) & (filters.video | filters.photo | filters.document))
-async def auto_forward_and_edit(client, message):
+async def powerful_forwarder(client, message):
     try:
-        print(f"Puthiya file vannu! Forward cheyyan thudangunnu...")
+        print(f"⚡ Puthiya media vannu! Processing thudangunnu...")
 
-        # message.copy() use cheyyumbol puthiya post aayi pokum (Forwarded tag undavilla)
-        await message.copy(
-            chat_id=TARGET_CHANNEL_ID,
-            caption=NEW_CAPTION,
-            has_spoiler=False, # Ithu False aakkumpol Telegram-le aa thilangunna blur (spoiler) maari kittum!
-            reply_markup=None  # Ithu None aakkumpol pazhaya postile buttons ozhivaayi kittum!
-        )
-        print("✅ Vijayakaramayi post cheythu!")
+        # Video aanel
+        if message.video:
+            await client.send_video(
+                chat_id=TARGET_CHANNEL_ID,
+                video=message.video.file_id,
+                caption=NEW_CAPTION,
+                supports_streaming=True
+            )
+        # Photo aanel
+        elif message.photo:
+            await client.send_photo(
+                chat_id=TARGET_CHANNEL_ID,
+                photo=message.photo.file_id,
+                caption=NEW_CAPTION
+            )
+        # Document (File) aanel
+        elif message.document:
+            await client.send_document(
+                chat_id=TARGET_CHANNEL_ID,
+                document=message.document.file_id,
+                caption=NEW_CAPTION
+            )
+
+        print("✅ Success: Media clean aayi post cheythu!")
         
     except Exception as e:
-        print(f"❌ Oru error vannu: {e}")
+        print(f"❌ Error caught: {e}")
 
-# Bot run cheyyunnu
 if __name__ == "__main__":
-    print("🚀 Bot start cheyyunnu...")
+    print("🚀 Powerful Bot Successfully Started...")
     app.run()
